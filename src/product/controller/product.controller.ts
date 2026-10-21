@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { GetProductDataDTO } from "../services/getProduct/dto/getProductData.dto.js";
 import { GetProductService } from "../services/getProduct/service/getProduct.service.js";
@@ -8,6 +8,9 @@ import { PostProductInputDTO } from "../services/postProduct/dto/postProductInpu
 import { PostProductService } from "../services/postProduct/service/postProduct.service.js";
 import { PutProductInputDTO } from "../services/putProduct/dto/putProductInput.dto.js";
 import { PutProductService } from "../services/putProduct/service/putProduct.service.js";
+import { DeleteProductInputDTO } from "../services/deleteProduct/dto/deleteProductInput.dto.js";
+import { DeleteProductOutputDTO } from "../services/deleteProduct/dto/deleteProductOutput.dto.js";
+import { DeleteProductService } from "../services/deleteProduct/service/deleteProduct.service.js";
 
 @ApiTags('Products')
 @Controller('product')
@@ -16,6 +19,7 @@ export class ProductController{
         private readonly getProductService: GetProductService,
         private readonly postProductService: PostProductService,
         private readonly putProductService: PutProductService,
+        private readonly deleteProductService: DeleteProductService,
     ){}
 
     @Get('product')
@@ -43,5 +47,13 @@ export class ProductController{
     ): Promise<void>{
         data.product_id = product_id;
         return await this.putProductService.execute(data);
+    }
+
+    @Delete('product/:product_id')
+    @ApiOperation({ summary: "Deleta um produto" })
+    @ApiBody({ type: DeleteProductInputDTO })
+    @ApiOkResponse({ type: DeleteProductOutputDTO })
+    async deleteProduct(@Param() dto: DeleteProductInputDTO): Promise<DeleteProductOutputDTO>{
+        return await this.deleteProductService.execute(dto)
     }
 }

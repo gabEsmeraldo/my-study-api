@@ -7,6 +7,8 @@ import { PostProductService } from "./postProduct/service/postProduct.service.js
 import { PostProductRepository } from "./postProduct/repository/postProduct.repository.js";
 import { PutProductService } from "./putProduct/service/putProduct.service.js";
 import { PutProductRepository } from "./putProduct/repository/putProduct.repository.js";
+import { DeleteProductService } from "./deleteProduct/service/deleteProduct.service.js";
+import { DeleteProductRepository } from "./deleteProduct/repository/deleteProduct.repository.js";
 
 @Module({
     imports: [DatabaseModule],
@@ -18,6 +20,8 @@ import { PutProductRepository } from "./putProduct/repository/putProduct.reposit
         PostProductRepository,
         PutProductService,
         PutProductRepository,
+        DeleteProductService,
+        DeleteProductRepository
     ]
 })
 export class ProductServicesModule{}
