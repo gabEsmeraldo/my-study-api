@@ -3,6 +3,7 @@ import { AppController } from './app.controller.js';
 import { ConfigModule } from '@nestjs/config';
 import { SharedModule } from './shared/shared.module.js';
 import { ProductModule } from './product/product.module.js';
+import { FileModule } from './file/file.module.js';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ProductModule } from './product/product.module.js';
     }),
     SharedModule,
     ProductModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [],
