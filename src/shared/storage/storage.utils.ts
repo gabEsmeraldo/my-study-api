@@ -18,16 +18,16 @@ export function resolveStorageFilePath(file_name: string){
 export function getContentType(file_name: string): string{
     const extension_type = file_name.trim().split('.').reverse()[0]
     switch (extension_type) {
-        case '.png':
+        case 'png':
             return 'image/png';
-        case '.jpg':
-        case '.jpeg':
+        case 'jpg':
+        case 'jpeg':
             return 'image/jpeg';
-        case '.pdf':
+        case 'pdf':
             return 'application/pdf';
-        case '.xlsx':
+        case 'xlsx':
             return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        case '.txt':
+        case 'txt':
             return 'text/plain';
         default:
             return 'application/octet-stream';
