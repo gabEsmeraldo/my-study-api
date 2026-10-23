@@ -9,10 +9,22 @@ export class ProductRow {
     created_at: Date
 }
 
+export class UserRow {
+    user_id: number;
+    username: string;
+    email: string;
+    password: string;
+    document: string | null;
+    role: string;
+    status: string
+    created_at: Date;
+}
+
 @Injectable()
 export class MemoryDatabaseService{
     constructor(){}
-    private count_id: number = 5
+    private last_product_id: number = 5
+    private last_user_id = 1;
     public products: ProductRow[] = [
         {
             "product_id": 1,
@@ -55,7 +67,25 @@ export class MemoryDatabaseService{
             "created_at": new Date()
         },
     ]
-    public nextProductId(): number{
-        return ++this.count_id;
+
+    public users: UserRow[] = [
+        {
+            user_id: 1,
+            username: 'admin',
+            email: 'admin@study.local',
+            password: 'c68c19691dc2b08807eb817eb97ae918c68c19691dc2b08807eb817eb97ae918:ca93c6e37cce3d8acb7750d52f19091c7b6f9f0b9e85be0b9e590a8ba9ad80bd863e094c2ac99377758377b9f4f832e81c6fa606ef8b4392c203c954d854d06e',
+            document: null,
+            role: 'ADMIN',
+            status: 'A',
+            created_at: new Date(),
+        },
+    ];
+    nextProductId(): number{
+        return ++this.last_product_id;
+    }
+
+    nextUserId(): number {
+        this.last_user_id += 1;
+        return this.last_user_id;
     }
 }
