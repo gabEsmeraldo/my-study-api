@@ -22,7 +22,7 @@ export class PostUserService{
             }
 
             const hashed_password = await this.cryptoService.hashPassword(dto.password);
-            const encrypted_document = await this.cryptoService.encryptData(dto.document);
+            const encrypted_document = this.cryptoService.encryptData(dto.document);
 
             const user_id = await this.postUserRepository.insertUser(
                 dto.username,

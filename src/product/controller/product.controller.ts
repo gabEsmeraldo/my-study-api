@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
-import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { GetProductDataDTO } from "../services/getProduct/dto/getProductData.dto.js";
 import { GetProductService } from "../services/getProduct/service/getProduct.service.js";
 import { GetProductInputDTO } from "../services/getProduct/dto/getProductInput.dto.js";
@@ -11,6 +11,7 @@ import { PutProductService } from "../services/putProduct/service/putProduct.ser
 import { DeleteProductInputDTO } from "../services/deleteProduct/dto/deleteProductInput.dto.js";
 import { DeleteProductOutputDTO } from "../services/deleteProduct/dto/deleteProductOutput.dto.js";
 import { DeleteProductService } from "../services/deleteProduct/service/deleteProduct.service.js";
+import { GetProductOutputDTO } from "../services/getProduct/dto/getProductOutput.dto.js";
 
 @ApiTags('Products')
 @Controller('product')
@@ -25,7 +26,8 @@ export class ProductController{
     @Get('product')
     @ApiOperation({ summary: "Lista de Produtos" })
     @ApiOkResponse({ type: GetProductDataDTO, isArray: true })
-    async getProducts(@Query() data: GetProductInputDTO): Promise<GetProductDataDTO[]>{
+    @ApiBadRequestResponse({ description: 'page ou size ausente ou inválido' })
+    async getProducts(@Query() data: GetProductInputDTO): Promise<GetProductOutputDTO>{
         return await this.getProductService.execute(data);
     }
 

@@ -6,11 +6,11 @@ import { PutProductInputDTO } from "../dto/putProductInput.dto.js";
 export class PutProductRepository{
     constructor(private readonly db_memory: MemoryDatabaseService){}
 
-    async productExists(product_id: number): Promise<Boolean>{
+    async productExists(product_id: number): Promise<boolean>{
         return this.db_memory.products.some((product) => product.product_id === product_id)
     }
 
-    async verifyProductName(name: string, product_id: number): Promise<Boolean>{
+    async verifyProductName(name: string, product_id: number): Promise<boolean>{
         return this.db_memory.products.some((product) => (product.name === name) && product.product_id != product_id)
     }
 

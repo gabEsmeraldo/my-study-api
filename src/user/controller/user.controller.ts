@@ -10,6 +10,7 @@ import { PostUserInputDTO } from "../services/postUser/dto/postUserInput.dto.js"
 import { PostUserOutputDTO } from "../services/postUser/dto/postUserOutput.dto.js";
 import { PutUserInputDTO } from "../services/putUser/dto/putUserInput.dto.js";
 import { DeleteUserInputDTO } from "../services/deleteUser/dto/deleteUserInput.dto.js";
+import { GetUserOutputDTO } from "../services/getUser/dto/getUserOutput.dto.js";
 
 @ApiTags('Users')
 @Controller('user')
@@ -28,7 +29,8 @@ export class UserController{
         type: GetUserDataDTO,
         isArray: true,
     })
-    async getUser(@Query() data: GetUserInputDTO): Promise<GetUserDataDTO[]> {
+    @ApiBadRequestResponse({ description: 'page ou size ausente ou invalido'})
+    async getUser(@Query() data: GetUserInputDTO): Promise<GetUserOutputDTO> {
         return await this.getUserService.execute(data)
     }
 

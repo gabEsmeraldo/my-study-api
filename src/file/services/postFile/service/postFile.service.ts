@@ -23,7 +23,7 @@ export class PostFileService{
                 await fs.mkdir(getStoragePath(), { recursive: true })
             }
             const nome = this.buildFileName(dto.file.originalname)
-            fs.writeFile(resolveStorageFilePath(nome), dto.file.buffer)
+            await fs.writeFile(resolveStorageFilePath(nome), dto.file.buffer)
             return {
                 file_name: nome,
                 original_name: dto.file.originalname,

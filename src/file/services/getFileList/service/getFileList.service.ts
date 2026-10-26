@@ -24,7 +24,7 @@ export class GetFileListService{
                     }
                 )
             )
-            return list.sort(function(a, b): any{
+            return list.sort(function(a, b) {
                 return b.created_at.getTime() - a.created_at.getTime();
             });
         } catch (error) {

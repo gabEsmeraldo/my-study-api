@@ -1,6 +1,6 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger"
 import { Type } from "class-transformer"
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, MaxLength, Min } from "class-validator"
+import { IsInt, IsNumber, IsOptional, IsPositive, MaxLength, Min } from "class-validator"
 
 export class PutProductInputDTO{
     @ApiHideProperty()
