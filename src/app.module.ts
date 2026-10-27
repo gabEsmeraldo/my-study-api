@@ -5,6 +5,7 @@ import { SharedModule } from './shared/shared.module.js';
 import { ProductModule } from './product/product.module.js';
 import { FileModule } from './file/file.module.js';
 import { UserModule } from './user/user.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module.js';
     ProductModule,
     FileModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [],

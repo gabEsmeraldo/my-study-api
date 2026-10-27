@@ -73,7 +73,7 @@ export class MemoryDatabaseService{
             user_id: 1,
             username: 'admin',
             email: 'admin@study.local',
-            password: 'c68c19691dc2b08807eb817eb97ae918c68c19691dc2b08807eb817eb97ae918:ca93c6e37cce3d8acb7750d52f19091c7b6f9f0b9e85be0b9e590a8ba9ad80bd863e094c2ac99377758377b9f4f832e81c6fa606ef8b4392c203c954d854d06e',
+            password: 'c2ded6f0d58c69ed1510791949998402:e8980419364f7e8bd6a4e705cbe38860b903b40910a1c9cb9475ed0228e9e5dd10e200034257ca738e0259cc1e3a41ff7b794205599c4f50fcb9fd7465ad7342',
             document: null,
             role: 'ADMIN',
             status: 'A',

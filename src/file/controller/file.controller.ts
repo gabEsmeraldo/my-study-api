@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, StreamableFile, UploadedFile, UseInterceptors } from "@nestjs/common";
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Param, Post, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { ApiBody, ApiConsumes, ApiOperation, ApiSecurity, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { GetFileListService } from "../services/getFileList/service/getFileList.service.js";
 import { GetFileListOutputDTO } from "../services/getFileList/dto/getFileListOutput.dto.js";
 import { GetFileService } from "../services/getFile/service/getFile.service.js";
@@ -9,8 +9,12 @@ import { DeleteFileService } from "../services/deleteFile/service/deleteFile.ser
 import { FileInterceptor } from "@nestjs/platform-express";
 import { PostFileInputDTO } from "../services/postFile/dto/postFileInput.dto.js";
 import { PostFileService } from "../services/postFile/service/postFile.service.js";
+import { SecretKeyGuard } from "../../auth/guards/secret-key.guard.js";
 
 @ApiTags('Files')
+@UseGuards(SecretKeyGuard)
+@ApiSecurity('x-api-key')
+@ApiUnauthorizedResponse({description: 'x-api-key ausente ou errada'})
 @Controller('file')
 export class FileController{
     constructor(

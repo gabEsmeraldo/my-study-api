@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
-import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { GetUserService } from "../services/getUser/service/getUser.service.js";
 import { PostUserService } from "../services/postUser/service/postUser.service.js";
 import { PutUserService } from "../services/putUser/service/putUser.service.js";
@@ -11,8 +11,16 @@ import { PostUserOutputDTO } from "../services/postUser/dto/postUserOutput.dto.j
 import { PutUserInputDTO } from "../services/putUser/dto/putUserInput.dto.js";
 import { DeleteUserInputDTO } from "../services/deleteUser/dto/deleteUserInput.dto.js";
 import { GetUserOutputDTO } from "../services/getUser/dto/getUserOutput.dto.js";
+import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard.js";
+import { ProfilesGuard } from "../../auth/guards/profiles.guard.js";
+import { Profiles } from "../../auth/decorators/profiles.decorator.js";
+import { Profile } from "../../auth/enums/profiles.enum.js";
 
 @ApiTags('Users')
+@ApiBearerAuth('jwt')
+@ApiUnauthorizedResponse({ description: 'Token ausente, inválido ou expirado'})
+@ApiForbiddenResponse({ description: 'Perfil sem permissão para esta ação'})
+@UseGuards(JwtAuthGuard, ProfilesGuard)
 @Controller('user')
 export class UserController{
     constructor(
@@ -23,6 +31,7 @@ export class UserController{
     ){}
 
     @Get()
+    @Profiles(Profile.ADMIN, Profile.DEFAULT_USER)
     @ApiOperation({ summary: 'Lista os usuários (sem a senha, com o cpf legivel)' })
     @ApiOkResponse({
         description: 'Lista de usuários',
@@ -35,6 +44,7 @@ export class UserController{
     }
 
     @Post()
+    @Profiles(Profile.ADMIN)
     @ApiOperation({
         summary: 'Cadastra um usuário (senha em hash, CPF criptografado)',
     })
@@ -54,6 +64,7 @@ export class UserController{
     }
 
     @Put(':user_id')
+    @Profiles(Profile.ADMIN)
     @ApiOperation({summary: 'Altera os campos enviados de um usuário'})
     @ApiBody({ type: PutUserInputDTO})
     @ApiOkResponse({ description: 'Usuário alterado'})
@@ -70,6 +81,7 @@ export class UserController{
     }
 
     @Delete(':user_id')
+    @Profiles(Profile.ADMIN)
     @ApiOperation({ summary: 'Remove um usuário'})
     @ApiOkResponse({ description: 'Usuário removido' })
     @ApiForbiddenResponse({description: 'Usuário protegido (o admin, id 1)'})

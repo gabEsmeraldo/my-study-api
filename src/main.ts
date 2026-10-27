@@ -15,6 +15,14 @@ async function bootstrap() {
   if (process.env.DEV) {
     const config = new DocumentBuilder()
       .setTitle('Study api')
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header'},
+        'jwt',
+      )
+      .addApiKey(
+        { type: 'apiKey', name: 'x-api-key', in: 'header'},
+        'x-api-key',
+      )
       .build();
     SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, config));
   }

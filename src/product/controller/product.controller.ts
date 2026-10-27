@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
-import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiSecurity, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { GetProductDataDTO } from "../services/getProduct/dto/getProductData.dto.js";
 import { GetProductService } from "../services/getProduct/service/getProduct.service.js";
 import { GetProductInputDTO } from "../services/getProduct/dto/getProductInput.dto.js";
@@ -12,6 +12,7 @@ import { DeleteProductInputDTO } from "../services/deleteProduct/dto/deleteProdu
 import { DeleteProductOutputDTO } from "../services/deleteProduct/dto/deleteProductOutput.dto.js";
 import { DeleteProductService } from "../services/deleteProduct/service/deleteProduct.service.js";
 import { GetProductOutputDTO } from "../services/getProduct/dto/getProductOutput.dto.js";
+import { SecretKeyGuard } from "../../auth/guards/secret-key.guard.js";
 
 @ApiTags('Products')
 @Controller('product')
@@ -32,6 +33,9 @@ export class ProductController{
     }
 
     @Post('product')
+    @UseGuards(SecretKeyGuard)
+    @ApiSecurity('x-api-key')
+    @ApiUnauthorizedResponse({description: 'x-api-key ausente ou errada'})
     @ApiOperation({ summary: "Adiciona um produto" })
     @ApiBody({ type: PostProductInputDTO})
     @ApiOkResponse({ type: PostProductOutputDTO })
@@ -40,6 +44,9 @@ export class ProductController{
     }
 
     @Put('product/:product_id')
+    @UseGuards(SecretKeyGuard)
+    @ApiSecurity('x-api-key')
+    @ApiUnauthorizedResponse({description: 'x-api-key ausente ou errada'})
     @ApiOperation({ summary: "Altera um produto existente (apenas campos enviados)" })
     @ApiBody({ type: PutProductInputDTO })
     @ApiOkResponse()
@@ -52,6 +59,9 @@ export class ProductController{
     }
 
     @Delete('product/:product_id')
+    @UseGuards(SecretKeyGuard)
+    @ApiSecurity('x-api-key')
+    @ApiUnauthorizedResponse({description: 'x-api-key ausente ou errada'})
     @ApiOperation({ summary: "Deleta um produto" })
     @ApiBody({ type: DeleteProductInputDTO })
     @ApiOkResponse({ type: DeleteProductOutputDTO })
