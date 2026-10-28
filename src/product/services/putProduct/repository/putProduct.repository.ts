@@ -1,30 +1,54 @@
 import { Injectable } from "@nestjs/common";
-import { MemoryDatabaseService } from "../../../../shared/database/services/memoryDatabase.service.js";
+import pg from 'pg';
 import { PutProductInputDTO } from "../dto/putProductInput.dto.js";
+import { PostgresDatabaseService } from "../../../../shared/database/services/postgresDatabase.service.js";
 
 @Injectable()
 export class PutProductRepository{
-    constructor(private readonly db_memory: MemoryDatabaseService){}
+    constructor(private readonly db_postgres: PostgresDatabaseService){}
 
-    async productExists(product_id: number): Promise<boolean>{
-        return this.db_memory.products.some((product) => product.product_id === product_id)
+    async productExists(product_id: number): Promise<number | undefined>{
+        const sql = `SELECT p.id FROM products p WHERE p.id = $1`;
+
+        const result = await this.db_postgres.findOne<{ id: number }>(sql,[
+            product_id,
+        ])
+
+        return result?.id;
     }
 
-    async verifyProductName(name: string, product_id: number): Promise<boolean>{
-        return this.db_memory.products.some((product) => (product.name === name) && product.product_id != product_id)
+    async verifyProductName(name: string, product_id: number): Promise<number | undefined>{
+        const sql = `
+            SELECT p.id FROM products p
+            WHERE UPPER(p.name) = UPPER($1) AND p.id <> $2
+        `;
+
+        const result = await this.db_postgres.findOne<{ id: number }>(sql,[
+            name,
+            product_id,
+        ])
+
+        return result?.id;
     }
 
-    async updateProduct(dto: PutProductInputDTO): Promise<void>{
-        const index = this.db_memory.products.findIndex((product) => product.product_id === dto.product_id)
-        let product = this.db_memory.products[index]
-        product = {
-            "product_id": product.product_id,
-            "name": dto.name ? dto.name : product.name,
-            "description": dto.description ? dto.description : product.description,
-            "price": dto.price ? dto.price : product.price,
-            "stock": dto.stock ? dto.stock : product.stock,
-            "created_at": product.created_at
-        }
-        this.db_memory.products[index] = product
+    async updateProduct(dto: PutProductInputDTO, transaction: pg.PoolClient): Promise<void>{
+        const sql = `
+            UPDATE products SET
+            name = COALESCE($1, name),
+            description = COALESCE($2, description),
+            price = COALESCE($3, price),
+            stock = COALESCE($4, stock)
+        WHERE id = $5
+        `;
+
+        const binds = [
+            dto.name ?? null,
+            dto.description ?? null,
+            dto.price ?? null,
+            dto.stock ?? null,
+            dto.product_id,
+        ];
+
+        await this.db_postgres.query(sql, binds, transaction);
     }
 }

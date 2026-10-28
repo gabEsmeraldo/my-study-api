@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
-import { MemoryDatabaseService } from "./services/memoryDatabase.service.js";
+import { OracleDatabaseService } from "./services/oracleDatabase.service.js";
+import { PostgresDatabaseService } from "./services/postgresDatabase.service.js";
 
 @Module({
-    providers: [MemoryDatabaseService],
-    exports: [MemoryDatabaseService],
+    providers: [OracleDatabaseService, PostgresDatabaseService],
+    exports: [OracleDatabaseService, PostgresDatabaseService],
 })
 export class DatabaseModule{}

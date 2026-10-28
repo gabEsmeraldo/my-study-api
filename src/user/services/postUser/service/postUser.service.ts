@@ -4,15 +4,19 @@ import { CryptoService } from "../../../../shared/crypto/services/crypto.service
 import { PostUserInputDTO } from "../dto/postUserInput.dto.js";
 import { PostUserOutputDTO } from "../dto/postUserOutput.dto.js";
 import { Profile } from "../../../../auth/enums/profiles.enum.js";
+import { OracleDatabaseService } from "../../../../shared/database/services/oracleDatabase.service.js";
 
 @Injectable()
 export class PostUserService{
     constructor(
         private readonly postUserRepository: PostUserRepository,
+        private readonly database: OracleDatabaseService,
         private readonly cryptoService: CryptoService,
     ){}
 
     async execute(dto: PostUserInputDTO): Promise<PostUserOutputDTO>{
+        const transaction = await this.database.open();
+
         try{
             if(await this.postUserRepository.verifyUsername(dto.username)) {
                 throw new BadRequestException('Usuário já cadastrado')
@@ -30,9 +34,13 @@ export class PostUserService{
                 hashed_password,
                 encrypted_document,
                 dto.role ?? Profile.DEFAULT_USER,
-            ) 
-            return { user_id } 
+                transaction,
+            )
+            if(!user_id) throw new Error('Falha ao criar usuário')            
+            await this.database.commitAndClose(transaction)
+            return { user_id }
         }catch (error) {
+            await this.database.rollbackAndClose(transaction)
             if(error instanceof BadRequestException) throw error
             throw new InternalServerErrorException(error)
         }

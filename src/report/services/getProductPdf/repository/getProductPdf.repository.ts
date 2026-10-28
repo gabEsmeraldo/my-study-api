@@ -1,25 +1,22 @@
 import { Injectable } from "@nestjs/common";
-import { MemoryDatabaseService } from "../../../../shared/database/services/memoryDatabase.service.js";
 import { GetProductPdfInputDTO } from "../dto/getProductPdfInput.dto.js";
 import { GetProductPdfDataDTO } from "../dto/getProductPdfData.dto.js";
+import { PostgresDatabaseService } from "../../../../shared/database/services/postgresDatabase.service.js";
 
 @Injectable()
 export class GetProductPdfRepository{
-    constructor(private readonly db_memory: MemoryDatabaseService){}
+    constructor(private readonly db_postgres: PostgresDatabaseService){}
 
     async getProducts(data: GetProductPdfInputDTO): Promise<GetProductPdfDataDTO[]> {
-        const search = data.search?.toUpperCase();
+        const sql = `
+            SELECT p.id AS product_id. p.name, p.price, p.stock
+            FROM products p
+            WHERE ($1::text IS NULL OR p.name ILIKE '%' || $1 || '%')
+            ORDER BY p.name
+        `;
 
-        return this.db_memory.products
-            .filter(
-                (product) => !search || product.name.toUpperCase().includes(search),
-            )
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map(({ product_id, name, price, stock }) => ({
-                product_id,
-                name,
-                price,
-                stock,
-            }));
+        return await this.db_postgres.query<GetProductPdfDataDTO>(sql, [
+            data.search ?? null,
+        ])
     }
 }

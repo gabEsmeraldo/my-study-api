@@ -12,6 +12,7 @@ async function bootstrap() {
     }),
   );
   app.enableCors()
+  app.enableShutdownHooks()
   if (process.env.DEV) {
     const config = new DocumentBuilder()
       .setTitle('Study api')

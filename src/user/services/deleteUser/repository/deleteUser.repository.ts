@@ -1,20 +1,29 @@
 import { Injectable } from "@nestjs/common";
-import { MemoryDatabaseService } from "../../../../shared/database/services/memoryDatabase.service.js";
+import { OracleDatabaseService } from "../../../../shared/database/services/oracleDatabase.service.js";
+import oracledb from "oracledb";
 
 @Injectable()
 export class DeleteUserRepository{
-    constructor(private readonly db_memory: MemoryDatabaseService){}
+    constructor(private readonly db_oracle: OracleDatabaseService){}
 
     async userExists(user_id: number): Promise<number | undefined> {
-        const user = this.db_memory.users.find((user) => user.user_id === user_id)
-        return user?.user_id;
+        const sql = `
+            SELECT u.ID FROM STUDY.USERS u
+            WHERE u.ID = :user_id
+        `;
+
+        const result = await this.db_oracle.findOne<{ id: number }>(sql, [
+            user_id
+        ])
+
+        return result?.id;
     }
 
-    async deleteUser(user_id: number): Promise<void> {
-        const index = this.db_memory.users.findIndex((user) => user.user_id === user_id)
+    async deleteUser(user_id: number, transaction: oracledb.Connection): Promise<void> {
+        const sql = `
+            DELETE FROM STUDY.USERS WHERE ID = :user_id
+        `;
 
-        if (index !== -1){
-            this.db_memory.users.splice(index, 1);
-        }
+        await this.db_oracle.query(sql, { user_id }, transaction)
     }
 }

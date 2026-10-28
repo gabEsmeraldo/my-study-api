@@ -1,5 +1,5 @@
 export interface IDatabase<TConnection, TBinds> {
-    createPoll(): Promise<void>
+    createPool(): Promise<void>
 
     open(): Promise<TConnection>;
 
@@ -7,7 +7,7 @@ export interface IDatabase<TConnection, TBinds> {
 
     rollbackAndClose(connection: TConnection): Promise<void>
 
-    closePoll(): Promise<void>
+    closePool(): Promise<void>
 
     query<T>(
         sql: string,
