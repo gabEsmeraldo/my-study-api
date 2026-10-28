@@ -3,7 +3,7 @@ import { GetUserRepository } from "../repository/getUser.repository.js";
 import { GetUserInputDTO } from "../dto/getUserInput.dto.js";
 import { CryptoService } from "../../../../shared/crypto/services/crypto.service.js";
 import { GetUserOutputDTO } from "../dto/getUserOutput.dto.js";
-import { paginateInMemory } from "../../../../shared/pagination/pagination.util.js";
+import { buildPaginationOutput, paginateInMemory } from "../../../../shared/pagination/pagination.util.js";
 
 @Injectable()
 export class GetUserService {
@@ -14,13 +14,19 @@ export class GetUserService {
 
     async execute(dto: GetUserInputDTO): Promise<GetUserOutputDTO>{
         try {
-            const users = await this.getUserRepository.getUsers();
+            const total = await this.getUserRepository.getUserCount(dto);
+
+            if(total === 0){
+                return buildPaginationOutput([], total, dto)
+            }
+
+            const users = await this.getUserRepository.getUserData(dto)
 
             const decrypted_users = users.map((user) => ({
                 ...user,
                 document: user.document ? this.cryptoService.decryptData(user.document) : null,
             }));
-            return paginateInMemory(decrypted_users, dto)
+            return buildPaginationOutput(decrypted_users, total, dto)
         } catch (error) {
             throw new InternalServerErrorException(error)
         }

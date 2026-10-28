@@ -9,6 +9,8 @@ import { PutProductService } from "./putProduct/service/putProduct.service.js";
 import { PutProductRepository } from "./putProduct/repository/putProduct.repository.js";
 import { DeleteProductService } from "./deleteProduct/service/deleteProduct.service.js";
 import { DeleteProductRepository } from "./deleteProduct/repository/deleteProduct.repository.js";
+import { GetProductInMemoryService } from "./getProductInMemory/service/getProductInMemory.service.js";
+import { GetProductInMemoryRepository } from "./getProductInMemory/repository/getProductInMemory.repository.js";
 
 @Module({
     imports: [DatabaseModule],
@@ -16,12 +18,14 @@ import { DeleteProductRepository } from "./deleteProduct/repository/deleteProduc
     providers: [
         GetProductService,
         GetProductRepository,
+        GetProductInMemoryService,
+        GetProductInMemoryRepository,
         PostProductService,
         PostProductRepository,
         PutProductService,
         PutProductRepository,
         DeleteProductService,
-        DeleteProductRepository
+        DeleteProductRepository,
     ]
 })
 export class ProductServicesModule{}

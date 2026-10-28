@@ -13,12 +13,15 @@ import { DeleteProductOutputDTO } from "../services/deleteProduct/dto/deleteProd
 import { DeleteProductService } from "../services/deleteProduct/service/deleteProduct.service.js";
 import { GetProductOutputDTO } from "../services/getProduct/dto/getProductOutput.dto.js";
 import { SecretKeyGuard } from "../../auth/guards/secret-key.guard.js";
+import { GetProductInMemoryService } from "../services/getProductInMemory/service/getProductInMemory.service.js";
+import { GetProductInMemoryOutputDTO } from "../services/getProductInMemory/dto/getProductInMemoryOutput.dto.js";
 
 @ApiTags('Products')
 @Controller('product')
 export class ProductController{
     constructor(
         private readonly getProductService: GetProductService,
+        private readonly getProductInMemoryService: GetProductInMemoryService,
         private readonly postProductService: PostProductService,
         private readonly putProductService: PutProductService,
         private readonly deleteProductService: DeleteProductService,
@@ -28,8 +31,19 @@ export class ProductController{
     @ApiOperation({ summary: "Lista de Produtos" })
     @ApiOkResponse({ type: GetProductDataDTO, isArray: true })
     @ApiBadRequestResponse({ description: 'page ou size ausente ou inválido' })
-    async getProducts(@Query() data: GetProductInputDTO): Promise<GetProductOutputDTO>{
+    async getProduct(@Query() data: GetProductInputDTO): Promise<GetProductOutputDTO>{
         return await this.getProductService.execute(data);
+    }
+
+    @Get('')
+    @ApiOperation({ summary: "Lista de Produtos (Paginação no service)" })
+    @ApiOkResponse({
+        description: 'Página de produtos ordenada pelo nome', 
+        type: GetProductInMemoryOutputDTO 
+    })
+    @ApiBadRequestResponse({ description: 'page ou size ausente ou inválido' })
+    async getProductInMemory(@Query() data: GetProductInputDTO): Promise<GetProductInMemoryOutputDTO>{
+        return await this.getProductInMemoryService.execute(data);
     }
 
     @Post('product')
