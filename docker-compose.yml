@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB_DATABASE:-study}
+      POSTGRES_USER: ${POSTGRES_DB_USER:-study}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD:-study123}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
+  oracle:
+    image: gvenzl/oracle-free:23-slim-faststart
+    environment:
+      ORACLE_PASSWORD: oracle123
+      APP_USER: ${ORACLE_DB_USER:-STUDY}
+      APP_USER_PASSWORD: ${ORACLE_DB_PASSWORD:-study123}
+    ports:
+      - '1521:1521'
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./database/oracle:/container-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh']
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  nest-study-api:
+    build: .
+    ports:
+      - '3000:3000'
+    env_file: .env
+    environment:
+      ORACLE_DB_HOST: oracle
+      POSTGRES_DB_HOST: postgres
+      FILE_SERVER_PATH: /usr/app/storage
+    volumes:
+      - api-storage:/usr/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      oracle:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  oracle-data:
+  postgres-data:
+  api-storage:

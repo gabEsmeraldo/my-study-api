@@ -9,7 +9,7 @@ export class GetProductPdfRepository{
 
     async getProducts(data: GetProductPdfInputDTO): Promise<GetProductPdfDataDTO[]> {
         const sql = `
-            SELECT p.id AS product_id. p.name, p.price, p.stock
+            SELECT p.id AS product_id, p.name, p.price, p.stock
             FROM products p
             WHERE ($1::text IS NULL OR p.name ILIKE '%' || $1 || '%')
             ORDER BY p.name
