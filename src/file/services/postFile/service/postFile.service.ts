@@ -24,6 +24,15 @@ export class PostFileService{
             }
             const nome = this.buildFileName(dto.file.originalname)
             await fs.writeFile(resolveStorageFilePath(nome), dto.file.buffer)
+
+            if (dto.description) {
+                await fs.writeFile(
+                    `${resolveStorageFilePath(nome)}.txt`,
+                    dto.description,
+                    'utf8'
+                );
+            }
+
             return {
                 file_name: nome,
                 original_name: dto.file.originalname,

@@ -13,17 +13,17 @@ export class PutUserService{
     ){}
 
     async execute(dto: PutUserInputDTO): Promise<void> {
+        if(!await this.putUserRepository.userExists(dto.user_id)){
+            throw new BadRequestException('Usuário não encontrado!')
+        }
+
+        if(dto.username) {
+            if(await this.putUserRepository.verifyUsername(dto.username, dto.user_id)){
+                throw new BadRequestException('Nome de usuário já existente')
+            }
+        }
         const transaction = await this.database.open();
         try {
-            if(!await this.putUserRepository.userExists(dto.user_id)){
-                throw new BadRequestException('Usuário não encontrado!')
-            }
-
-            if(dto.username) {
-                if(await this.putUserRepository.verifyUsername(dto.username, dto.user_id)){
-                    throw new BadRequestException('Nome de usuário já existente')
-                }
-            }
 
             if(dto.email) {
                 if(await this.putUserRepository.verifyEmail(dto.email, dto.user_id)){

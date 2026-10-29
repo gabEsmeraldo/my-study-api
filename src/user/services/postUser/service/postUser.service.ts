@@ -15,18 +15,20 @@ export class PostUserService{
     ){}
 
     async execute(dto: PostUserInputDTO): Promise<PostUserOutputDTO>{
+        
+        if(await this.postUserRepository.verifyUsername(dto.username)) {
+            throw new BadRequestException('Usuário já cadastrado')
+        }
+        if(await this.postUserRepository.verifyEmail(dto.email)) {
+            throw new BadRequestException('Email já cadastrado')
+        }
+
         const transaction = await this.database.open();
 
         try{
-            if(await this.postUserRepository.verifyUsername(dto.username)) {
-                throw new BadRequestException('Usuário já cadastrado')
-            }
-            if(await this.postUserRepository.verifyEmail(dto.email)) {
-                throw new BadRequestException('Email já cadastrado')
-            }
 
             const hashed_password = await this.cryptoService.hashPassword(dto.password);
-            const encrypted_document = this.cryptoService.encryptData(dto.document);
+            const encrypted_document = await this.cryptoService.encryptData(dto.document);
 
             const user_id = await this.postUserRepository.insertUser(
                 dto.username,
